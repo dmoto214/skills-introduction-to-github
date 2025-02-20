@@ -1,0 +1,79 @@
+//Employees Table
+int employeesTable = 46;            //Table
+int employeeId = 952;               //Single line
+int divisionRelx = 686;
+int linxTitleImport = 3360;
+int linxTitleRelx = 2580;
+int reportsTo = 3488;
+int reportsToPositionId = 3484;
+int positionId = 3485;
+int fullName = 650;
+int email = 956;
+int reportsToEmail = 4439;
+int userAdOu = 4516;
+int reportsToAdOu = 4517;
+int position = 2192;
+int mobilePhone = 1764;
+
+
+//Divisions Table
+int divisionsTable = 47;            //Table
+int division = 656;                 //Single line
+
+//Titles Table 
+int titleTable = 140;                //Table 
+int titleName = 2574;               //Title Name
+int titleDivision = 3361;                //Title Division
+
+//Titles Table
+int titlePosition = 3195;
+
+
+
+//Objective: 
+//Step 1: When an employee gets added, go up to the Titles table and find the matching Titles (import) field and set the Titles relationship if there's a match 
+//Step 2: then pull the Divisions associated from the Title and populate the Division relationship of the employee.
+//Date: 2/27/21
+//Author: Damon Sealock
+
+if(currentValues[linxTitleImport]){
+    Map titleLookup = loadRecord((titleTable), (titleName), currentValues[linxTitleImport]) as Map
+    if(titleLookup){
+        currentValues[linxTitleRelx] = titleLookup;
+        currentValues[divisionRelx] = titleLookup[titleDivision];
+        currentValues[linxTitleImport] = null;
+        currentValues[position] = titleLookup[titlePosition]
+    }
+}
+
+
+//Objective:  Pull the full name and email of the Reports To Import into the Reports To Single Line field and Reports To Email field
+//Date: 8/16/2022
+//Author: Damon Sealock
+
+if(currentValues[reportsToPositionId]){
+Map manager = loadRecord((employeesTable), (positionId), currentValues[reportsToPositionId]) as Map
+    
+    if(manager){
+        currentValues[reportsTo] = manager[fullName];
+        currentValues[reportsToEmail] = manager[email];
+        currentValues[reportsToAdOu] = manager[userAdOu]
+    }
+
+}
+
+//Objective: Format mobile phone number
+//Date: 11/6/2023
+//Author: Damon
+if(currentValues[mobilePhone]){
+    String number1 = currentValues[mobilePhone];
+    String number2 = number1.replaceAll("[^0-9]", "");
+        if(number2.startsWith("1")){
+           String number = number2.replaceFirst("1","");
+            currentValues[mobilePhone] = number.format("%s-%s-%s", number.substring(0, 3), number.substring(3, 6), number.substring(6, 10));
+        }
+        
+        else { 
+            currentValues[mobilePhone] = number2.format("%s-%s-%s", number2.substring(0, 3), number2.substring(3, 6), number2.substring(6, 10));
+        }
+}
